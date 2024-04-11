@@ -16,6 +16,7 @@ public class DrawCauldron : MonoBehaviour
 {
 	public int resolution = 4;
 	Mesh mesh;
+	bool generate = false;
 
 	void Awake()
 	{
@@ -24,8 +25,21 @@ public class DrawCauldron : MonoBehaviour
 			name = "Procedural Mesh"
 		};
 		GetComponent<MeshFilter>().mesh = mesh;
-		GenerateMesh();
 	}
+	void OnValidate() 
+	{
+		generate = true;
+	} 
+
+    void Update()
+    {
+		if (generate)
+		{
+			GenerateMesh();
+			generate = false;
+		}
+    }
+
 
     public struct Cauldron
 	{
@@ -67,20 +81,19 @@ public class DrawCauldron : MonoBehaviour
 
 		public void Execute(int z)
 		{
-			/*
 			int vi = 4 * Resolution * z, ti = 2 * Resolution * z;
 
 			for (int x = 0; x < Resolution; x++, vi += 4, ti += 2)
 			{
 				var xCoordinates = float2(x, x + 1f) / Resolution - 0.5f;
-				var zCoordinates = float2(z, z + 1f) / Resolution - 0.5f;
+				var yCoordinates = float2(z, z + 1f) / Resolution - 0.5f;
 
 				var vertex = new Vertex();
 				vertex.normal.y = -1f;
 				vertex.tangent.xw = float2(1f, -1f);
 
 				vertex.position.x = xCoordinates.x;
-				vertex.position.z = zCoordinates.x;
+				vertex.position.y = yCoordinates.x;
 				SetVertex(vi + 0, vertex);
 
 				vertex.position.x = xCoordinates.y;
@@ -88,7 +101,7 @@ public class DrawCauldron : MonoBehaviour
 				SetVertex(vi + 1, vertex);
 
 				vertex.position.x = xCoordinates.x;
-				vertex.position.z = zCoordinates.y;
+				vertex.position.y = yCoordinates.y;
 				vertex.texCoord0 = float2(0f, 1f);
 				SetVertex(vi + 2, vertex);
 
@@ -99,10 +112,9 @@ public class DrawCauldron : MonoBehaviour
 				SetTriangle(ti + 0, vi + int3(0, 2, 1));
 				SetTriangle(ti + 1, vi + int3(1, 2, 3));
 			}
-			*/
-		}
+        }
 
-		public void Setup(Mesh.MeshData meshData)
+        public void Setup(Mesh.MeshData meshData)
 		{
 			var descriptor = new NativeArray<VertexAttributeDescriptor>(
 				4, Allocator.Temp, NativeArrayOptions.UninitializedMemory
