@@ -11,13 +11,35 @@ using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
 
 using static Unity.Mathematics.math;
+using Unity.VisualScripting;
+using static UnityEngine.Rendering.DebugUI;
+using System;
 
 public class DrawCauldron : MonoBehaviour
 {
+    [Header("Shape Settings")]
+    [Range(0f, 1)]
+    public float alpha = 1;
     [Range(1, 180)]
     public int resolution = 1;
-    public float radius = 1.0f; 
-	Mesh mesh;
+    [Range(1, 20)]
+    public float radius = 1.0f;
+    [Range(0f, 20)]
+    public float height = .5f;
+
+    [Header("Color Settings")]
+    [Range(1f, 100)]
+    public float glowingPower = 1.0f;
+    public Color color;
+
+    [Header("Wave Settings")]
+    public bool wave;
+    public float amplitude = .1f;
+    public float speed = .5f;
+    public float period = .5f;
+    public Vector3 origin;
+
+    Mesh mesh;
 	bool generate = false;
 
 	void Awake()
@@ -38,7 +60,8 @@ public class DrawCauldron : MonoBehaviour
 		if (generate)
 		{
 			GenerateMesh();
-			generate = false;
+            ApplyMaterial();
+            generate = false;
 		}
     }
 
@@ -77,14 +100,15 @@ public class DrawCauldron : MonoBehaviour
 
         public int Resolution { get; set; }
         public float Radius { get; set; }
-        float DeltaAngle => 180.0f / (Resolution * Resolution);
-        public int VertexCount => 4 * Resolution * Resolution + 3 * Resolution * Resolution;
-        public int IndexCount => 6 * Resolution * Resolution + 3 * Resolution * Resolution;
+        public float Height { get; set; }
+        float DeltaAngle => 180.0f / Resolution;
+        public int VertexCount => 4 * Resolution * Resolution + 3 * Resolution;
+        public int IndexCount => 6 * Resolution * Resolution + 3 * Resolution;
         public Bounds Bounds => new Bounds(Vector3.zero, new Vector3(1f, 0, 1f));
 
         public void Execute(int z)
         {
-            int vi = 4 * Resolution * z + 3 * Resolution * z, ti = 2 * Resolution * z + Resolution * z;
+            int vi = 4 * Resolution * z + 3 * z, ti = 2 * Resolution * z + z;
             DrawRectangle(z, ref vi, ref ti);
             DrawHalfCircle(z, ref vi, ref ti);
         }
@@ -94,7 +118,7 @@ public class DrawCauldron : MonoBehaviour
             for (int x = 0; x < Resolution; x++, vi += 4, ti += 2)
             {
                 var xCoordinates = (float2(x, x + 1) / Resolution - 0.5f) * 2 * Radius;
-                var yCoordinates = float2(z, z + 1) / Resolution / 2;
+                var yCoordinates = float2(z, z + 1) / Resolution * Height;
 
                 var vertex = new Vertex();
                 vertex.normal.y = -1f;
@@ -127,25 +151,22 @@ public class DrawCauldron : MonoBehaviour
             float val = Mathf.PI / 180f;
             float x = 180 + (180.0f / Resolution) * z;
 
-            for (int i = 0; i < Resolution; i++, vi += 3, ti += 1, x += DeltaAngle)
-            {
-                var vertex = new Vertex();
-                vertex.normal.y = 1f;
-                vertex.tangent.xw = float2(1f, -1f);
-                SetVertex(vi, vertex);
+            var vertex = new Vertex();
+            vertex.normal.y = 1f;
+            vertex.tangent.xw = float2(1f, -1f);
+            SetVertex(vi, vertex);
 
-                vertex.position = float3(Radius * Mathf.Cos(x * val), Radius * Mathf.Sin(x * val), 0);
-                vertex.texCoord0 = float2((vertex.position.x + Radius) / 2 * Radius, (vertex.position.y + Radius) / 2 * Radius);
-                SetVertex(vi + 1, vertex);
+            vertex.position = float3(Radius * Mathf.Cos(x * val), Radius * Mathf.Sin(x * val), 0);
+            vertex.texCoord0 = float2((vertex.position.x + Radius) / 2 * Radius, (vertex.position.y + Radius) / 2 * Radius);
+            SetVertex(vi + 1, vertex);
 
-                float xCoordinates = Radius * Mathf.Cos((x + DeltaAngle) * val);
-                float yCoordinates = Radius * Mathf.Sin((x + DeltaAngle) * val);
-                vertex.texCoord0 = float2((xCoordinates + Radius) / 2 * Radius, (yCoordinates + Radius) / 2 * Radius);
-                vertex.position = float3(xCoordinates, yCoordinates, 0);
-                SetVertex(vi + 2, vertex);
+            float xCoordinates = Radius * Mathf.Cos((x + DeltaAngle) * val);
+            float yCoordinates = Radius * Mathf.Sin((x + DeltaAngle) * val);
+            vertex.texCoord0 = float2((xCoordinates + Radius) / 2 * Radius, (yCoordinates + Radius) / 2 * Radius);
+            vertex.position = float3(xCoordinates, yCoordinates, 0);
+            SetVertex(vi + 2, vertex);
 
-                SetTriangle(ti + 0, vi + int3(0, 2, 1));
-            }
+            SetTriangle(ti + 0, vi + int3(0, 2, 1));
         }
 
         public void Setup(Mesh.MeshData meshData)
@@ -200,7 +221,8 @@ public class DrawCauldron : MonoBehaviour
         MeshJob mj = new()
         {
             Resolution = resolution,
-            Radius = radius
+            Radius = radius,
+            Height = height,
         };
         mj.Setup(meshData);
         mj.ScheduleParallel(resolution, resolution, default).Complete();
@@ -208,4 +230,21 @@ public class DrawCauldron : MonoBehaviour
 		Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
 		GetComponent<MeshFilter>().mesh = mesh;
 	}
+
+    void ApplyMaterial()
+    {
+        Material material = GetComponent<MeshRenderer>().material;
+        // Shape
+        material.SetFloat("_Alpha", alpha);
+        // Color
+        material.SetColor("_Color", color);
+        material.SetFloat("_Power", glowingPower);
+        // Wave
+        material.SetFloat("_Wave", Convert.ToInt32(wave));
+        material.SetFloat("_Height", height);
+        material.SetVector("_Origin", origin);
+        material.SetFloat("_Period", period);
+        material.SetFloat("_Speed", speed);
+        material.SetFloat("_Amplitude", amplitude);
+    }
 }

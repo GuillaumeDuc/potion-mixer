@@ -37,13 +37,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.13
-    - _Period: 0.61
-    - _Power: 1.07
-    - _Speed: 0.69
+    - _Alpha: 1
+    - _Amplitude: 0.12
+    - _Height: 0.5
+    - _Period: 0.69
+    - _Power: 2.55
+    - _Speed: 0.6
+    - _Wave: 1
     m_Colors:
-    - _Color: {r: 0, g: 0.30534363, b: 1, a: 0}
-    - _Origin: {r: 7.24, g: 0, b: 0, a: 0}
+    - _Color: {r: 0, g: 1, b: 0.41781783, a: 0}
+    - _Origin: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &5701152039806921899
