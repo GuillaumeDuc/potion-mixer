@@ -18,8 +18,6 @@ using System;
 public class DrawCauldron : MonoBehaviour
 {
     [Header("Shape Settings")]
-    [Range(0f, 1)]
-    public float alpha = 1;
     [Range(1, 180)]
     public int resolution = 1;
     [Range(1, 20)]
@@ -28,6 +26,8 @@ public class DrawCauldron : MonoBehaviour
     public float height = .5f;
 
     [Header("Color Settings")]
+    [Range(0f, 1)]
+    public float alpha = 1;
     [Range(1f, 100)]
     public float glowingPower = 1.0f;
     public Color color;
@@ -102,71 +102,40 @@ public class DrawCauldron : MonoBehaviour
         public float Radius { get; set; }
         public float Height { get; set; }
         float DeltaAngle => 180.0f / Resolution;
-        public int VertexCount => 4 * Resolution * Resolution + 3 * Resolution;
-        public int IndexCount => 6 * Resolution * Resolution + 3 * Resolution;
+        public int VertexCount => 4 * Resolution;
+        public int IndexCount => 6 * Resolution;
         public Bounds Bounds => new Bounds(Vector3.zero, new Vector3(1f, 0, 1f));
 
         public void Execute(int z)
         {
-            int vi = 4 * Resolution * z + 3 * z, ti = 2 * Resolution * z + z;
-            DrawRectangle(z, ref vi, ref ti);
-            DrawHalfCircle(z, ref vi, ref ti);
-        }
+            int vi = 4 * z, ti = 2 * z;
 
-        void DrawRectangle(int z, ref int vi, ref int ti)
-        {
-            for (int x = 0; x < Resolution; x++, vi += 4, ti += 2)
-            {
-                var xCoordinates = (float2(x, x + 1) / Resolution - 0.5f) * 2 * Radius;
-                var yCoordinates = float2(z, z + 1) / Resolution * Height;
-
-                var vertex = new Vertex();
-                vertex.normal.y = -1f;
-                vertex.tangent.xw = float2(1f, -1f);
-
-                vertex.position.x = xCoordinates.x;
-                vertex.position.y = yCoordinates.x;
-                SetVertex(vi + 0, vertex);
-
-                vertex.position.x = xCoordinates.y;
-                vertex.texCoord0 = float2(1f, 0f);
-                SetVertex(vi + 1, vertex);
-
-                vertex.position.x = xCoordinates.x;
-                vertex.position.y = yCoordinates.y;
-                vertex.texCoord0 = float2(0f, 1f);
-                SetVertex(vi + 2, vertex);
-
-                vertex.position.x = xCoordinates.y;
-                vertex.texCoord0 = 1f;
-                SetVertex(vi + 3, vertex);
-
-                SetTriangle(ti + 0, vi + int3(0, 2, 1));
-                SetTriangle(ti + 1, vi + int3(1, 2, 3));
-            }
-        }
-
-        void DrawHalfCircle(int z, ref int vi, ref int ti)
-        {
             float val = Mathf.PI / 180f;
-            float x = 180 + (180.0f / Resolution) * z;
+            float start = 180 + (180.0f / Resolution) * z;
+
+            float3 firstPoint = float3(Radius * Mathf.Cos(start * val), Radius * Mathf.Sin(start * val) + 1, 0);
+            float3 secondPoint = float3(Radius * Mathf.Cos((start + DeltaAngle) * val), Radius * Mathf.Sin((start + DeltaAngle) * val) + 1, 0);
 
             var vertex = new Vertex();
-            vertex.normal.y = 1f;
+            vertex.normal.y = -1f;
             vertex.tangent.xw = float2(1f, -1f);
-            SetVertex(vi, vertex);
+            vertex.position = float3(firstPoint.x, Mathf.Max(Height, firstPoint.y), 0);
+            SetVertex(vi + 0, vertex);
 
-            vertex.position = float3(Radius * Mathf.Cos(x * val), Radius * Mathf.Sin(x * val), 0);
-            vertex.texCoord0 = float2((vertex.position.x + Radius) / 2 * Radius, (vertex.position.y + Radius) / 2 * Radius);
+            vertex.texCoord0 = float2(1f, 0f);
+            vertex.position = firstPoint;
             SetVertex(vi + 1, vertex);
 
-            float xCoordinates = Radius * Mathf.Cos((x + DeltaAngle) * val);
-            float yCoordinates = Radius * Mathf.Sin((x + DeltaAngle) * val);
-            vertex.texCoord0 = float2((xCoordinates + Radius) / 2 * Radius, (yCoordinates + Radius) / 2 * Radius);
-            vertex.position = float3(xCoordinates, yCoordinates, 0);
+            vertex.position = float3(secondPoint.x, Mathf.Max(Height, secondPoint.y), 0);
+            vertex.texCoord0 = float2(0f, 1f);
             SetVertex(vi + 2, vertex);
 
+            vertex.position = secondPoint;
+            vertex.texCoord0 = 1f;
+            SetVertex(vi + 3, vertex);
+
             SetTriangle(ti + 0, vi + int3(0, 2, 1));
+            SetTriangle(ti + 1, vi + int3(1, 2, 3));
         }
 
         public void Setup(Mesh.MeshData meshData)

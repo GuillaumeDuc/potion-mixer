@@ -12,13 +12,13 @@ void MixShaderFunc_float (
 	out float3 NormalOut,
 	out float3 TangentOut
 ) {
-    if (PositionIn.y >= height && WaveEnabled)
+    if (PositionIn.y > 1 && WaveEnabled)
     {
 		float3 p = PositionIn - Origin;
 		float d = length(p);
 		float f = 2.0 * PI * Period * (d - Speed * _Time.y);
 	
-        PositionOut = PositionIn + float3(0.0, max(Amplitude, height) * (sin(f) + 1), 0.0);
+        PositionOut = PositionIn + float3(0.0, Amplitude * sin(f), 0.0);
 	
 		float2 derivatives = (2.0 * PI * Amplitude * Period * cos(f) / max(d, 0.0001)) * p.xz;
 
