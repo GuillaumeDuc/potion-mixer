@@ -14,9 +14,12 @@ using static Unity.Mathematics.math;
 using Unity.VisualScripting;
 using static UnityEngine.Rendering.DebugUI;
 using System;
+using System.Linq;
 
 public class DrawCauldron : MonoBehaviour
 {
+    public EdgeCollider2D cauldronCoreCollider;
+
     [Header("Shape Settings")]
     [Range(1, 180)]
     public int resolution = 1;
@@ -40,7 +43,9 @@ public class DrawCauldron : MonoBehaviour
     public Vector3 origin;
 
     Mesh mesh;
-	bool generate = false;
+    NativeArray<Vector2> topPoints;
+    NativeArray<Vector2> bottomPoints;
+    bool generate = false;
 
 	void Awake()
 	{
@@ -59,15 +64,16 @@ public class DrawCauldron : MonoBehaviour
     {
 		if (generate)
 		{
+            OnDisable();
 			GenerateMesh();
             ApplyMaterial();
             generate = false;
 		}
     }
 
-	[BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-	public struct MeshJob : IJobFor
-	{
+    [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
+    public struct MeshJob : IJobFor
+    {
         struct Vertex
         {
             public float3 position, normal;
@@ -75,7 +81,7 @@ public class DrawCauldron : MonoBehaviour
             public float2 texCoord0;
         }
 
-        struct Stream0
+        public struct Stream0
         {
             public float3 position, normal;
             public float4 tangent;
@@ -93,10 +99,16 @@ public class DrawCauldron : MonoBehaviour
             };
         }
         [NativeDisableContainerSafetyRestriction]
-        NativeArray<Stream0> stream0;
+        public NativeArray<Stream0> stream0;
 
         [NativeDisableContainerSafetyRestriction]
         NativeArray<TriangleUInt16> triangles;
+
+        [NativeDisableParallelForRestriction]
+        public NativeArray<Vector2> BottomPoints;
+
+        [NativeDisableParallelForRestriction]
+        public NativeArray<Vector2> TopPoints;
 
         public int Resolution { get; set; }
         public float Radius { get; set; }
@@ -121,18 +133,22 @@ public class DrawCauldron : MonoBehaviour
             vertex.tangent.xw = float2(1f, -1f);
             vertex.position = float3(firstPoint.x, Mathf.Max(Height, firstPoint.y), 0);
             SetVertex(vi + 0, vertex);
+            TopPoints[ti] = float2(firstPoint.x, firstPoint.y);
 
             vertex.texCoord0 = float2(1f, 0f);
             vertex.position = firstPoint;
             SetVertex(vi + 1, vertex);
+            BottomPoints[ti] = float2(firstPoint.x, firstPoint.y);
 
             vertex.position = float3(secondPoint.x, Mathf.Max(Height, secondPoint.y), 0);
             vertex.texCoord0 = float2(0f, 1f);
             SetVertex(vi + 2, vertex);
+            TopPoints[ti + 1] = float2(firstPoint.x, firstPoint.y);
 
             vertex.position = secondPoint;
             vertex.texCoord0 = 1f;
             SetVertex(vi + 3, vertex);
+            BottomPoints[ti + 1] = float2(firstPoint.x, firstPoint.y);
 
             SetTriangle(ti + 0, vi + int3(0, 2, 1));
             SetTriangle(ti + 1, vi + int3(1, 2, 3));
@@ -187,20 +203,42 @@ public class DrawCauldron : MonoBehaviour
 	{
 		Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
 		Mesh.MeshData meshData = meshDataArray[0];
+
+        bottomPoints = new NativeArray<Vector2>(resolution * 2, Allocator.Persistent);
+        topPoints = new NativeArray<Vector2>(resolution * 2, Allocator.Persistent);
+
         MeshJob mj = new()
         {
             Resolution = resolution,
             Radius = radius,
             Height = height,
+            BottomPoints = bottomPoints,
+            TopPoints = topPoints
         };
         mj.Setup(meshData);
         mj.ScheduleParallel(resolution, resolution, default).Complete();
 
-		Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
+        // Set collider trigger
+        GetComponent<PolygonCollider2D>().points = bottomPoints.Select(points => points * .95f).ToArray();
+        cauldronCoreCollider.points = bottomPoints.ToArray();
+
+        Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
 		GetComponent<MeshFilter>().mesh = mesh;
 	}
 
-    void ApplyMaterial()
+    void OnDisable()
+    {
+        if (topPoints != null)
+        {
+            topPoints.Dispose();
+        }
+        if (bottomPoints != null)
+        {
+            bottomPoints.Dispose();
+        }
+    }
+
+    public void ApplyMaterial()
     {
         Material material = GetComponent<MeshRenderer>().material;
         // Shape

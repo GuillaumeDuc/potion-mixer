@@ -12,7 +12,7 @@ void MixShaderFunc_float (
 	out float3 NormalOut,
 	out float3 TangentOut
 ) {
-    if (PositionIn.y > 1 && WaveEnabled)
+    if (PositionIn.y == height && WaveEnabled)
     {
 		float3 p = PositionIn - Origin;
 		float d = length(p);
