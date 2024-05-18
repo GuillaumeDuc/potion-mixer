@@ -11,15 +11,16 @@ public class Ingredient : MonoBehaviour
     public float glowingPower;
     public Color color;
 
-    [Header("Wave+ Settings")]
+    [Header("Wave Settings")]
     public bool enableWave;
+    public bool disableWave;
     public float amplitude;
     public float speed;
     public float period;
     public Vector3 origin;
 
     [Header("Ingredient Settings")]
-    public float disappearSpeed = 1;
+    public float disappearSpeed = .1f;
     bool disappear;
     float startTime;
     SpriteRenderer spriteRenderer;
@@ -53,12 +54,13 @@ public class Ingredient : MonoBehaviour
     {
         cauldron.alpha = Mathf.Max(cauldron.alpha + alpha, 0);
         cauldron.glowingPower += glowingPower;
-        cauldron.color *= color;
+        cauldron.color += color / 2;
 
-        cauldron.wave = enableWave || cauldron.wave;
+        cauldron.wave = enableWave || cauldron.wave && !disableWave && cauldron.wave;
         cauldron.amplitude += amplitude;
         cauldron.speed += speed;
         cauldron.period += period;
+        cauldron.origin += origin;
 
         cauldron.ApplyMaterial();
     }
