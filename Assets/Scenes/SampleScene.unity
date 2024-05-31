@@ -618,7 +618,7 @@ GameObject:
   - component: {fileID: 603905164}
   - component: {fileID: 603905163}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: Smoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -687,8 +687,8 @@ Transform:
   m_GameObject: {fileID: 603905162}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.52, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 1}
+  m_LocalPosition: {x: 0.38, y: -1.21, z: 0}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -991,8 +991,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 1.23915, y: 0.18135, z: 0}
-    m_Extent: {x: 8.52215, y: 5.62405, z: 0}
+    m_Center: {x: 1.2382498, y: 0.18225002, z: 0}
+    m_Extent: {x: 8.51435, y: 5.62375, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1443,7 +1443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   alpha: 0
-  glowingPower: 2
+  glowingPower: 44
   color: {r: 1, g: 0, b: 0.75332737, a: 0}
   enableWave: 0
   disableWave: 0
