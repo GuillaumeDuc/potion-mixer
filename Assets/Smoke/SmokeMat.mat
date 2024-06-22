@@ -40,6 +40,10 @@ Material:
         m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _BlurCustomFunction_82b51287201b48fe8a21696b84124a61_Tex_6_Texture2D:
+        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -54,9 +58,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _PowerCurl: 1
+    - _CurlSlowness: 20
+    - _PowerCurl: 25
     - _Scale: 7.12
-    - _VoronoiScale: 1.02
+    - _SmokeSlowness: 11
+    - _VoronoiScale: 4.97
     - _Width: 0.61
     m_Colors: []
   m_BuildTextureStacks: []
