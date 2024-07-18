@@ -42,6 +42,12 @@ public class DrawCauldron : MonoBehaviour
     public float period = .5f;
     public Vector3 origin;
 
+    [Header("Smoke Settings")]
+    public bool smoke;
+    [ColorUsage(true, true)]
+    public Color smokeColor;
+    public GameObject smokeGO;
+
     Mesh mesh;
     NativeArray<Vector2> topPoints;
     NativeArray<Vector2> bottomPoints;
@@ -54,6 +60,7 @@ public class DrawCauldron : MonoBehaviour
 			name = "Cauldron"
 		};
 		GetComponent<MeshFilter>().mesh = mesh;
+        ApplySmoke();
     }
 	void OnValidate() 
 	{
@@ -131,5 +138,12 @@ public class DrawCauldron : MonoBehaviour
         material.SetFloat("_Period", period);
         material.SetFloat("_Speed", speed);
         material.SetFloat("_Amplitude", amplitude);
+    }
+
+    public void ApplySmoke()
+    {
+        Material smokeMat = smokeGO.GetComponent<Renderer>().material;
+        smokeMat.SetColor("_Color", smokeColor);
+        smokeGO.SetActive(smoke);
     }
 }

@@ -25,6 +25,12 @@ public class Ingredient : MonoBehaviour
     float startTime;
     SpriteRenderer spriteRenderer;
 
+    [Header("Smoke Settings")]
+    public bool enableSmoke = false;
+    public bool disableSmoke = false;
+    [ColorUsage(true, true)]
+    public Color smokeColor;
+
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -62,7 +68,11 @@ public class Ingredient : MonoBehaviour
         cauldron.period += period;
         cauldron.origin += origin;
 
+        cauldron.smoke = enableSmoke || cauldron.smoke && !disableSmoke && cauldron.smoke;
+        cauldron.smokeColor = enableSmoke ? cauldron.smokeColor + smokeColor / 2 : cauldron.smokeColor;
+
         cauldron.ApplyMaterial();
+        cauldron.ApplySmoke(); 
     }
 
     void Disappear()

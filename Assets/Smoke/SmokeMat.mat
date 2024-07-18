@@ -58,12 +58,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaPower: 0.667
     - _CurlSlowness: 20
+    - _Difference: -0.28
+    - _FadingPower: 113
     - _PowerCurl: 25
     - _Scale: 7.12
     - _SmokeSlowness: 11
     - _VoronoiScale: 4.97
     - _Width: 0.61
-    m_Colors: []
+    - _YLuminousOffset: 0.42
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
