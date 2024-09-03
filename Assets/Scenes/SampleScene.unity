@@ -157,10 +157,10 @@ MonoBehaviour:
   enableWave: 0
   disableWave: 0
   amplitude: 0
-  speed: 0
+  speed: -0.1
   period: 0
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 3
   enableSmoke: 1
   disableSmoke: 0
   smokeColor: {r: 1, g: 1, b: 1, a: 0}
@@ -479,7 +479,7 @@ MonoBehaviour:
   speed: 0.5
   period: 0.5
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 5
   enableSmoke: 0
   disableSmoke: 0
   smokeColor: {r: 0, g: 0.9638114, b: 1, a: 0}
@@ -536,10 +536,10 @@ MonoBehaviour:
   enableWave: 0
   disableWave: 0
   amplitude: 0
-  speed: 0
+  speed: -0.1
   period: 0
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 3
   enableSmoke: 1
   disableSmoke: 0
   smokeColor: {r: 1, g: 1, b: 1, a: 0}
@@ -1067,7 +1067,7 @@ Transform:
   m_GameObject: {fileID: 603905162}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: -2.08, z: -0.5}
+  m_LocalPosition: {x: -0, y: -1.8, z: -0.5}
   m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1110,7 +1110,7 @@ MonoBehaviour:
   m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 000000004d2bd4b0
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1330,7 +1330,7 @@ MonoBehaviour:
   speed: 0.5
   period: 0.5
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 5
   enableSmoke: 0
   disableSmoke: 0
   smokeColor: {r: 0, g: 0.9638114, b: 1, a: 0}
@@ -1547,7 +1547,7 @@ MonoBehaviour:
   m_Intensity: 0.5
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 000000004d2bd4b0
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1563,8 +1563,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 1.2375, y: 0.18600011, z: 0}
-    m_Extent: {x: 8.5222, y: 5.6244, z: 0}
+    m_Center: {x: 1.2288499, y: 0.17729998, z: 0}
+    m_Extent: {x: 8.5196495, y: 5.6202, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1698,7 +1698,7 @@ MonoBehaviour:
   speed: 0
   period: 0
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 5
   enableSmoke: 1
   disableSmoke: 0
   smokeColor: {r: 3.9533498, g: 3.9072456, b: 0, a: 0}
@@ -1812,7 +1812,7 @@ MonoBehaviour:
   speed: 0
   period: 0
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 5
   enableSmoke: 1
   disableSmoke: 0
   smokeColor: {r: 5.216476, g: 5.155641, b: 0, a: 0}
@@ -1986,10 +1986,10 @@ MonoBehaviour:
   enableWave: 0
   disableWave: 0
   amplitude: 0
-  speed: 0
+  speed: -0.1
   period: 0
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 3
   enableSmoke: 1
   disableSmoke: 0
   smokeColor: {r: 1, g: 1, b: 1, a: 0}
@@ -2556,7 +2556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   alpha: 0
-  glowingPower: 44
+  glowingPower: 20
   color: {r: 1, g: 0, b: 0.75332737, a: 0}
   enableWave: 0
   disableWave: 0
@@ -2564,7 +2564,7 @@ MonoBehaviour:
   speed: 0
   period: 1.15
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 10
   enableSmoke: 0
   disableSmoke: 0
   smokeColor: {r: 0, g: 0, b: 0, a: 0}
@@ -2672,7 +2672,7 @@ MonoBehaviour:
   speed: 0
   period: 0
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 5
   enableSmoke: 1
   disableSmoke: 0
   smokeColor: {r: 5.216476, g: 5.155641, b: 0, a: 0}
@@ -2864,7 +2864,7 @@ MonoBehaviour:
   speed: 0.5
   period: 0.5
   origin: {x: 0, y: 0, z: 0}
-  disappearSpeed: 0.1
+  disappearSpeed: 5
   enableSmoke: 0
   disableSmoke: 0
   smokeColor: {r: 0, g: 0.9638114, b: 1, a: 0}

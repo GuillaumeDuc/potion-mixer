@@ -53,6 +53,13 @@ public class DrawCauldron : MonoBehaviour
     NativeArray<Vector2> bottomPoints;
     bool generate = false;
 
+    private bool startTransition;
+    private float currentTransitionTime, transitionSpeed;
+    private float targetAlpha, targetGlowingPower, targetAmplitude, targetSpeed, targetPeriod;
+    private float currentAlpha, currentGlowingPower, currentAmplitude, currentSpeed, currentPeriod;
+    private Vector3 currentOrigin, targetOrigin;
+    private Color targetColor, targetSmokeColor, currentColor, currentSmokeColor;
+
 	void Awake()
 	{
 		mesh = new Mesh
@@ -61,6 +68,7 @@ public class DrawCauldron : MonoBehaviour
 		};
 		GetComponent<MeshFilter>().mesh = mesh;
         ApplySmoke();
+        generate = true;
     }
 	void OnValidate() 
 	{
@@ -76,6 +84,16 @@ public class DrawCauldron : MonoBehaviour
             ApplyMaterial();
             generate = false;
 		}
+        if (startTransition)
+        {
+            currentTransitionTime += Time.deltaTime / transitionSpeed;
+            TransitionToTarget();
+            if (currentTransitionTime >= 1)
+            {
+                startTransition = false;
+                currentTransitionTime = 0;
+            }
+        }
     }
 
 	void GenerateMesh()
@@ -127,7 +145,7 @@ public class DrawCauldron : MonoBehaviour
     {
         Material material = GetComponent<MeshRenderer>().material;
         // Shape
-        material.SetFloat("_Alpha", alpha);
+        material.SetFloat("_Alpha", alpha > 0.01 ? alpha : .01f);
         // Color
         material.SetColor("_Color", color);
         material.SetFloat("_Power", glowingPower);
@@ -137,7 +155,7 @@ public class DrawCauldron : MonoBehaviour
         material.SetVector("_Origin", origin);
         material.SetFloat("_Period", period);
         material.SetFloat("_Speed", speed);
-        material.SetFloat("_Amplitude", amplitude);
+        material.SetFloat("_Amplitude",  amplitude);
     }
 
     public void ApplySmoke()
@@ -145,5 +163,50 @@ public class DrawCauldron : MonoBehaviour
         Material smokeMat = smokeGO.GetComponent<Renderer>().material;
         smokeMat.SetColor("_Color", smokeColor);
         smokeGO.SetActive(smoke);
+    }
+
+    public void AddIngredient(Ingredient ingredient)
+    {
+        wave = ingredient.enableWave || wave && !ingredient.disableWave && wave;
+        smoke = ingredient.enableSmoke || smoke && !ingredient.disableSmoke && smoke;
+        transitionSpeed = ingredient.disappearSpeed;
+
+        speed = speed + ingredient.speed;
+        period = period + ingredient.period;
+
+        currentAlpha = alpha;
+        currentGlowingPower = glowingPower;
+        currentColor = color;
+        currentAmplitude = amplitude;
+        currentSpeed = speed;
+        currentPeriod = period;
+        currentSmokeColor = smokeColor;
+        currentOrigin = origin;
+
+        targetAlpha = Mathf.Max(alpha + ingredient.alpha, 0);
+        targetGlowingPower = glowingPower + ingredient.glowingPower;
+        targetColor = color + ingredient.color / 2;
+        targetAmplitude = amplitude + ingredient.amplitude;
+        targetSpeed = speed + ingredient.speed;
+        targetPeriod = period + ingredient.period;
+        targetSmokeColor = ingredient.enableSmoke ? smokeColor + ingredient.smokeColor / 2 : smokeColor;
+        targetOrigin = origin + ingredient.origin;
+
+        startTransition = true;
+    }
+
+    public void TransitionToTarget()
+    {
+        alpha = Mathf.Lerp(currentAlpha, targetAlpha, currentTransitionTime);
+        glowingPower = Mathf.Lerp(currentGlowingPower, targetGlowingPower, currentTransitionTime);
+        color = Color.Lerp(currentColor, targetColor, currentTransitionTime);
+        amplitude = Mathf.Lerp(currentAmplitude, targetAmplitude, currentTransitionTime);
+        // speed = Mathf.Lerp(currentSpeed, targetSpeed, currentTransitionTime);
+        // period = Mathf.Lerp(currentPeriod, targetPeriod, currentTransitionTime);
+        origin = Vector3.Lerp(currentOrigin, targetOrigin, currentTransitionTime);
+        smokeColor = Color.Lerp(currentSmokeColor, targetSmokeColor, currentTransitionTime);
+
+        ApplyMaterial();
+        ApplySmoke();
     }
 }

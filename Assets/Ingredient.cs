@@ -21,8 +21,6 @@ public class Ingredient : MonoBehaviour
 
     [Header("Ingredient Settings")]
     public float disappearSpeed = .1f;
-    bool disappear;
-    float startTime;
     SpriteRenderer spriteRenderer;
 
     [Header("Smoke Settings")]
@@ -30,6 +28,10 @@ public class Ingredient : MonoBehaviour
     public bool disableSmoke = false;
     [ColorUsage(true, true)]
     public Color smokeColor;
+
+    private float transitionValue;
+    private DrawCauldron cauldron;
+    private bool contact;
 
     private void Start()
     {
@@ -50,49 +52,28 @@ public class Ingredient : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Mix"))
         {
-            ApplyToMix(collision.gameObject.GetComponent<DrawCauldron>());
-            disappear = true;
-            startTime = Time.deltaTime;
+            cauldron = collision.gameObject.GetComponent<DrawCauldron>();
+            cauldron.AddIngredient(this);
+            contact = true;
         }
-    }
-
-    void ApplyToMix(DrawCauldron cauldron)
-    {
-        cauldron.alpha = Mathf.Max(cauldron.alpha + alpha, 0);
-        cauldron.glowingPower += glowingPower;
-        cauldron.color += color / 2;
-
-        cauldron.wave = enableWave || cauldron.wave && !disableWave && cauldron.wave;
-        cauldron.amplitude += amplitude;
-        cauldron.speed += speed;
-        cauldron.period += period;
-        cauldron.origin += origin;
-
-        cauldron.smoke = enableSmoke || cauldron.smoke && !disableSmoke && cauldron.smoke;
-        cauldron.smokeColor = enableSmoke ? cauldron.smokeColor + smokeColor / 2 : cauldron.smokeColor;
-
-        cauldron.ApplyMaterial();
-        cauldron.ApplySmoke(); 
     }
 
     void Disappear()
     {
         Color spriteColor = spriteRenderer.color;
-        spriteColor.a += (Time.deltaTime - startTime) * disappearSpeed;
+        spriteColor.a -= Time.deltaTime / disappearSpeed;
         spriteRenderer.color = spriteColor;
-        if (spriteColor.a <= 0.01)
+        if (spriteColor.a <= 0)
         {
             Destroy(gameObject);
         }
     }
 
-
     private void Update()
     {
-        if (disappear)
+        if (contact)
         {
             Disappear();
         }
-        
     }
 }
