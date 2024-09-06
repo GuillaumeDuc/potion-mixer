@@ -9,12 +9,12 @@ using UnityEngine.Rendering;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
+using System;
+using System.Linq;
 
 using static Unity.Mathematics.math;
 using Unity.VisualScripting;
 using static UnityEngine.Rendering.DebugUI;
-using System;
-using System.Linq;
 
 public class DrawCauldron : MonoBehaviour
 {
@@ -167,12 +167,14 @@ public class DrawCauldron : MonoBehaviour
 
     public void AddIngredient(Ingredient ingredient)
     {
-        wave = ingredient.enableWave || wave && !ingredient.disableWave && wave;
-        smoke = ingredient.enableSmoke || smoke && !ingredient.disableSmoke && smoke;
+        Potion potion = ingredient.potion;
+
+        wave = potion.enableWave || wave && !potion.disableWave && wave;
+        smoke = potion.enableSmoke || smoke && !potion.disableSmoke && smoke;
         transitionSpeed = ingredient.disappearSpeed;
 
-        speed = speed + ingredient.speed;
-        period = period + ingredient.period;
+        speed = speed + potion.speed;
+        period = period + potion.period;
 
         currentAlpha = alpha;
         currentGlowingPower = glowingPower;
@@ -183,14 +185,14 @@ public class DrawCauldron : MonoBehaviour
         currentSmokeColor = smokeColor;
         currentOrigin = origin;
 
-        targetAlpha = Mathf.Max(alpha + ingredient.alpha, 0);
-        targetGlowingPower = glowingPower + ingredient.glowingPower;
-        targetColor = color + ingredient.color / 2;
-        targetAmplitude = amplitude + ingredient.amplitude;
-        targetSpeed = speed + ingredient.speed;
-        targetPeriod = period + ingredient.period;
-        targetSmokeColor = ingredient.enableSmoke ? smokeColor + ingredient.smokeColor / 2 : smokeColor;
-        targetOrigin = origin + ingredient.origin;
+        targetAlpha = Mathf.Max(alpha + potion.alpha, 0);
+        targetGlowingPower = glowingPower + potion.glowingPower;
+        targetColor = color + potion.color / 2;
+        targetAmplitude = amplitude + potion.amplitude;
+        targetSpeed = speed + potion.speed;
+        targetPeriod = period + potion.period;
+        targetSmokeColor = potion.enableSmoke ? smokeColor + potion.smokeColor / 2 : smokeColor;
+        targetOrigin = origin + potion.origin;
 
         startTransition = true;
     }

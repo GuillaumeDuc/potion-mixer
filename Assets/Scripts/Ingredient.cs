@@ -4,34 +4,14 @@ using UnityEngine;
 
 public class Ingredient : MonoBehaviour
 {
-    [Header("Color Settings")]
-    [Range(-1f, 1)]
-    public float alpha;
-    [Range(-100f, 100)]
-    public float glowingPower;
-    public Color color;
-
-    [Header("Wave Settings")]
-    public bool enableWave;
-    public bool disableWave;
-    public float amplitude;
-    public float speed;
-    public float period;
-    public Vector3 origin;
+    public Potion potion;
 
     [Header("Ingredient Settings")]
     public float disappearSpeed = .1f;
+
+    private bool contact;
     SpriteRenderer spriteRenderer;
 
-    [Header("Smoke Settings")]
-    public bool enableSmoke = false;
-    public bool disableSmoke = false;
-    [ColorUsage(true, true)]
-    public Color smokeColor;
-
-    private float transitionValue;
-    private DrawCauldron cauldron;
-    private bool contact;
 
     private void Start()
     {
@@ -52,7 +32,7 @@ public class Ingredient : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Mix"))
         {
-            cauldron = collision.gameObject.GetComponent<DrawCauldron>();
+            DrawCauldron cauldron = collision.gameObject.GetComponent<DrawCauldron>();
             cauldron.AddIngredient(this);
             contact = true;
         }
