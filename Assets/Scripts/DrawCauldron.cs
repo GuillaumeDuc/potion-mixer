@@ -19,27 +19,29 @@ using static UnityEngine.Rendering.DebugUI;
 public class DrawCauldron : MonoBehaviour
 {
     public EdgeCollider2D cauldronCoreCollider;
+    public TMPro.TextMeshProUGUI potionNameTMP;
 
     [Header("Shape Settings")]
     [Range(1, 180)]
-    public int resolution = 1;
+    public int resolution;
     [Range(1, 20)]
-    public float radius = 1.0f;
+    public float radius;
     [Range(0f, 20)]
-    public float height = .5f;
+    public float height;
+
 
     [Header("Color Settings")]
     [Range(0f, 1)]
-    public float alpha = 1;
-    [Range(1f, 100)]
-    public float glowingPower = 1.0f;
+    public float alpha;
+    [Range(0f, 1000)]
+    public float glowingPower;
     public Color color;
 
     [Header("Wave Settings")]
     public bool wave;
-    public float amplitude = .1f;
-    public float speed = .5f;
-    public float period = .5f;
+    public float amplitude;
+    public float speed;
+    public float period;
     public Vector3 origin;
 
     [Header("Smoke Settings")]
@@ -54,11 +56,8 @@ public class DrawCauldron : MonoBehaviour
     bool generate = false;
 
     private bool startTransition;
+    private Potion potion = new(), currentPotion = new(), targetPotion = new();
     private float currentTransitionTime, transitionSpeed;
-    private float targetAlpha, targetGlowingPower, targetAmplitude, targetSpeed, targetPeriod;
-    private float currentAlpha, currentGlowingPower, currentAmplitude, currentSpeed, currentPeriod;
-    private Vector3 currentOrigin, targetOrigin;
-    private Color targetColor, targetSmokeColor, currentColor, currentSmokeColor;
 
 	void Awake()
 	{
@@ -68,6 +67,7 @@ public class DrawCauldron : MonoBehaviour
 		};
 		GetComponent<MeshFilter>().mesh = mesh;
         ApplySmoke();
+        SynchroPotionWithView();
         generate = true;
     }
 	void OnValidate() 
@@ -82,12 +82,15 @@ public class DrawCauldron : MonoBehaviour
             OnDisable();
 			GenerateMesh();
             ApplyMaterial();
+            SynchroPotionWithView();
             generate = false;
 		}
         if (startTransition)
         {
             currentTransitionTime += Time.deltaTime / transitionSpeed;
             TransitionToTarget();
+            SynchroViewWithPotion();
+            potionNameTMP.SetText(PotionList.GetMatchingPotion(potion).potionName);
             if (currentTransitionTime >= 1)
             {
                 startTransition = false;
@@ -145,17 +148,17 @@ public class DrawCauldron : MonoBehaviour
     {
         Material material = GetComponent<MeshRenderer>().material;
         // Shape
-        material.SetFloat("_Alpha", alpha > 0.01 ? alpha : .01f);
+        material.SetFloat("_Alpha", Mathf.Max(potion.alpha, .01f));
         // Color
-        material.SetColor("_Color", color);
-        material.SetFloat("_Power", glowingPower);
+        material.SetColor("_Color", potion.color);
+        material.SetFloat("_Power", Mathf.Max(potion.glowingPower, 1));
         // Wave
         material.SetFloat("_Wave", Convert.ToInt32(wave));
         material.SetFloat("_Height", height);
-        material.SetVector("_Origin", origin);
-        material.SetFloat("_Period", period);
-        material.SetFloat("_Speed", speed);
-        material.SetFloat("_Amplitude",  amplitude);
+        material.SetVector("_Origin", potion.origin);
+        material.SetFloat("_Period", potion.period);
+        material.SetFloat("_Speed", potion.speed);
+        material.SetFloat("_Amplitude", potion.amplitude);
     }
 
     public void ApplySmoke()
@@ -167,48 +170,50 @@ public class DrawCauldron : MonoBehaviour
 
     public void AddIngredient(Ingredient ingredient)
     {
-        Potion potion = ingredient.potion;
+        Potion ingredientPotion = ingredient.potion;
 
-        wave = potion.enableWave || wave && !potion.disableWave && wave;
-        smoke = potion.enableSmoke || smoke && !potion.disableSmoke && smoke;
+        wave = ingredientPotion.enableWave || wave && !ingredientPotion.disableWave && wave;
+        smoke = ingredientPotion.enableSmoke || smoke && !ingredientPotion.disableSmoke && smoke;
         transitionSpeed = ingredient.disappearSpeed;
 
-        speed = speed + potion.speed;
-        period = period + potion.period;
+        potion.speed += ingredientPotion.speed;
+        potion.period += ingredientPotion.period;
 
-        currentAlpha = alpha;
-        currentGlowingPower = glowingPower;
-        currentColor = color;
-        currentAmplitude = amplitude;
-        currentSpeed = speed;
-        currentPeriod = period;
-        currentSmokeColor = smokeColor;
-        currentOrigin = origin;
-
-        targetAlpha = Mathf.Max(alpha + potion.alpha, 0);
-        targetGlowingPower = glowingPower + potion.glowingPower;
-        targetColor = color + potion.color / 2;
-        targetAmplitude = amplitude + potion.amplitude;
-        targetSpeed = speed + potion.speed;
-        targetPeriod = period + potion.period;
-        targetSmokeColor = potion.enableSmoke ? smokeColor + potion.smokeColor / 2 : smokeColor;
-        targetOrigin = origin + potion.origin;
+        currentPotion.SetPotion(potion);
+        targetPotion.SetPotion(potion);
+        targetPotion.AddPotion(ingredientPotion);
 
         startTransition = true;
     }
 
     public void TransitionToTarget()
     {
-        alpha = Mathf.Lerp(currentAlpha, targetAlpha, currentTransitionTime);
-        glowingPower = Mathf.Lerp(currentGlowingPower, targetGlowingPower, currentTransitionTime);
-        color = Color.Lerp(currentColor, targetColor, currentTransitionTime);
-        amplitude = Mathf.Lerp(currentAmplitude, targetAmplitude, currentTransitionTime);
-        // speed = Mathf.Lerp(currentSpeed, targetSpeed, currentTransitionTime);
-        // period = Mathf.Lerp(currentPeriod, targetPeriod, currentTransitionTime);
-        origin = Vector3.Lerp(currentOrigin, targetOrigin, currentTransitionTime);
-        smokeColor = Color.Lerp(currentSmokeColor, targetSmokeColor, currentTransitionTime);
+        potion.alpha = Mathf.Lerp(currentPotion.alpha, targetPotion.alpha, currentTransitionTime);
+        potion.glowingPower = Mathf.Lerp(currentPotion.glowingPower, targetPotion.glowingPower, currentTransitionTime);
+        potion.color = Color.Lerp(currentPotion.color, targetPotion.color, currentTransitionTime);
+        potion.amplitude = Mathf.Lerp(currentPotion.amplitude, targetPotion.amplitude, currentTransitionTime);
+        // speed = Mathf.Lerp(currentPotion.speed, targetPotion.speed, currentTransitionTime);
+        // period = Mathf.Lerp(currentPotion.period, targetPotion.period, currentTransitionTime);
+        potion.origin = Vector3.Lerp(currentPotion.origin, targetPotion.origin, currentTransitionTime);
+        potion.smokeColor = Color.Lerp(currentPotion.smokeColor, targetPotion.smokeColor, currentTransitionTime);
 
         ApplyMaterial();
         ApplySmoke();
+    }
+
+    private void SynchroPotionWithView()
+    {
+        potion.SetPotion("", alpha, glowingPower, color, wave, wave, amplitude, speed, period, origin, smoke, smoke, smokeColor);
+    }
+    private void SynchroViewWithPotion()
+    {
+        alpha = potion.alpha;
+        glowingPower = potion.glowingPower;
+        color = potion.color;
+        amplitude = potion.amplitude;
+        speed = potion.speed;
+        period = potion.period;
+        origin = potion.origin;
+        smokeColor = potion.smokeColor;
     }
 }
