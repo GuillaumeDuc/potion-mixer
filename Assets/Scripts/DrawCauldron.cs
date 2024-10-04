@@ -83,6 +83,7 @@ public class DrawCauldron : MonoBehaviour
 			GenerateMesh();
             ApplyMaterial();
             SynchroPotionWithView();
+            potionNameTMP.SetText(PotionList.GetMatchingPotion(potion).potionName);
             generate = false;
 		}
         if (startTransition)
@@ -155,7 +156,7 @@ public class DrawCauldron : MonoBehaviour
         // Wave
         material.SetFloat("_Wave", Convert.ToInt32(wave));
         material.SetFloat("_Height", height);
-        material.SetVector("_Origin", potion.origin);
+        material.SetVector("_Origin", potion.GetOrigin());
         material.SetFloat("_Period", potion.period);
         material.SetFloat("_Speed", potion.speed);
         material.SetFloat("_Amplitude", potion.amplitude);
@@ -172,8 +173,8 @@ public class DrawCauldron : MonoBehaviour
     {
         Potion ingredientPotion = ingredient.potion;
 
-        wave = ingredientPotion.enableWave || wave && !ingredientPotion.disableWave && wave;
-        smoke = ingredientPotion.enableSmoke || smoke && !ingredientPotion.disableSmoke && smoke;
+        potion.enableWave = ingredientPotion.ignoreWave ? potion.enableWave : ingredientPotion.enableWave;
+        potion.enableSmoke = ingredientPotion.ignoreSmoke ? potion.enableSmoke : ingredientPotion.enableSmoke;
         transitionSpeed = ingredient.disappearSpeed;
 
         potion.speed += ingredientPotion.speed;
@@ -194,7 +195,7 @@ public class DrawCauldron : MonoBehaviour
         potion.amplitude = Mathf.Lerp(currentPotion.amplitude, targetPotion.amplitude, currentTransitionTime);
         // speed = Mathf.Lerp(currentPotion.speed, targetPotion.speed, currentTransitionTime);
         // period = Mathf.Lerp(currentPotion.period, targetPotion.period, currentTransitionTime);
-        potion.origin = Vector3.Lerp(currentPotion.origin, targetPotion.origin, currentTransitionTime);
+        potion.origin = Vector3.Lerp(currentPotion.GetOrigin(), targetPotion.GetOrigin(), currentTransitionTime);
         potion.smokeColor = Color.Lerp(currentPotion.smokeColor, targetPotion.smokeColor, currentTransitionTime);
 
         ApplyMaterial();
@@ -203,7 +204,7 @@ public class DrawCauldron : MonoBehaviour
 
     private void SynchroPotionWithView()
     {
-        potion.SetPotion("", alpha, glowingPower, color, wave, wave, amplitude, speed, period, origin, smoke, smoke, smokeColor);
+        potion.SetPotion("", alpha, glowingPower, color, wave, false , amplitude, speed, period, origin, smoke, false, smokeColor);
     }
     private void SynchroViewWithPotion()
     {
@@ -213,7 +214,9 @@ public class DrawCauldron : MonoBehaviour
         amplitude = potion.amplitude;
         speed = potion.speed;
         period = potion.period;
-        origin = potion.origin;
+        origin = potion.GetOrigin();
         smokeColor = potion.smokeColor;
+        wave = potion.enableWave;
+        smoke = potion.enableSmoke;
     }
 }

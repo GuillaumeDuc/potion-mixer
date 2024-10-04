@@ -503,9 +503,9 @@ MonoBehaviour:
   resolution: 22
   radius: 1
   height: 1.5
-  alpha: 0
+  alpha: 0.2
   glowingPower: 0
-  color: {r: 1, g: 1, b: 1, a: 0}
+  color: {r: 0, g: 0.5716541, b: 1, a: 0}
   wave: 0
   amplitude: 0
   speed: 0
@@ -1555,8 +1555,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 1.23225, y: 0.18094993, z: 0}
-    m_Extent: {x: 8.51085, y: 5.6263504, z: 0}
+    m_Center: {x: 1.23575, y: 0.18435001, z: 0}
+    m_Extent: {x: 8.51265, y: 5.62715, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1618,10 +1618,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 189699414}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -383.9, y: -302.69}
-  m_SizeDelta: {x: 200, y: 27.66}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 189.1, y: 14.799988}
+  m_SizeDelta: {x: 200, y: 27.660004}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &934283940
 MonoBehaviour:
@@ -1928,6 +1928,7 @@ MonoBehaviour:
   - {fileID: 8883807943781414017, guid: 40b30a4090338a74faf03e41f91a555f, type: 3}
   - {fileID: 8210765773306666197, guid: b7125e62deca60d4d839d8ad290897b1, type: 3}
   UIImage: {fileID: 6085744350326707208, guid: 4a08255d909af8547a9c47d94e24bfda, type: 3}
+  spawnLocation: {x: 0, y: 0}
 --- !u!1 &1520974097
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ public class StoreUIScript : MonoBehaviour
 {
     public List<GameObject> listIngredient;
     public GameObject UIImage;
+    public Vector2 spawnLocation;
 
     void Start()
     {
@@ -36,7 +37,7 @@ public class StoreUIScript : MonoBehaviour
     {
         button.GetComponent<Button>().onClick.AddListener(()=> {
             GameObject go = Instantiate(ingredient);
-            go.transform.position += new Vector3(0, 2);
+            go.transform.position += (Vector3)spawnLocation;
         });
     }
 }

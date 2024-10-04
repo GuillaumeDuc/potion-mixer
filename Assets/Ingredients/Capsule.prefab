@@ -49,18 +49,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   potion:
     potionName: 
-    alpha: 0
-    glowingPower: 0
-    color: {r: 0, g: 0, b: 0, a: 0}
+    alpha:
+      value: 0
+      isNull: 0
+    glowingPower:
+      value: -100
+      isNull: 0
+    color:
+      value: {r: 0, g: 0, b: 0, a: 0}
+      isNull: 0
     enableWave: 0
-    disableWave: 0
-    amplitude: 0
-    speed: 0
-    period: 0
+    ignoreWave: 1
+    amplitude:
+      value: 0
+      isNull: 1
+    speed:
+      value: 0
+      isNull: 1
+    period:
+      value: 0
+      isNull: 1
     origin: {x: 0, y: 0, z: 0}
     enableSmoke: 0
-    disableSmoke: 1
-    smokeColor: {r: 0, g: 0, b: 0, a: 0}
+    ignoreSmoke: 0
+    smokeColor:
+      value: {r: 0, g: 0, b: 0, a: 0}
+      isNull: 1
   disappearSpeed: 5
 --- !u!212 &1662687262383174777
 SpriteRenderer:

@@ -48,18 +48,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   potion:
-    alpha: -0.1
-    glowingPower: 0
-    color: {r: 1, g: 0.8960046, b: 0, a: 0}
+    potionName: 
+    alpha:
+      value: -0.05
+      isNull: 0
+    glowingPower:
+      value: 0
+      isNull: 1
+    color:
+      value: {r: 0, g: 1, b: 0, a: 0}
+      isNull: 0
     enableWave: 0
-    disableWave: 0
-    amplitude: 0
-    speed: 0
-    period: 0
-    origin: {x: 0, y: 0, z: 0}
+    ignoreWave: 1
+    amplitude:
+      value: 0
+      isNull: 1
+    speed:
+      value: 0
+      isNull: 1
+    period:
+      value: 0
+      isNull: 1
+    origin: {x: 0, y: 0, z: 0.86}
     enableSmoke: 1
-    disableSmoke: 0
-    smokeColor: {r: 1, g: 0.76555127, b: 0, a: 0}
+    ignoreSmoke: 0
+    smokeColor:
+      value: {r: 0, g: 1, b: 0.008930683, a: 0}
+      isNull: 0
   disappearSpeed: 5
 --- !u!212 &1847858815576348349
 SpriteRenderer:
@@ -105,7 +120,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.9315591, b: 0, a: 1}
+  m_Color: {r: 0, g: 1, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
